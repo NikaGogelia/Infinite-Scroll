@@ -1,4 +1,4 @@
-import UserCard from "../components/UserCard";
+import UsersWrapper from "../components/UsersWrapper";
 import { useLoaderData } from "react-router-dom";
 
 function Users() {
@@ -7,11 +7,7 @@ function Users() {
   return (
     <div className="users-container">
       <h1>Users</h1>
-      <div className="users d-flex flex-wrap justify-content-center align-items-center">
-        {users?.list?.map((user) => (
-          <UserCard path="user" {...user} key={user.id} />
-        ))}
-      </div>
+      <UsersWrapper users={users} />
     </div>
   );
 }

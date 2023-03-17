@@ -8,7 +8,9 @@ function LoaderError() {
     <div className="loader-error">
       <h3>Error</h3>
       <p>{error.message}</p>
-      <Link to="/">Go to home page</Link>
+      <Link className="btn btn-primary" to="/">
+        Go to home page
+      </Link>
     </div>
   );
 }

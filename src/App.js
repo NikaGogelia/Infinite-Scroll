@@ -2,13 +2,11 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "normalize.css";
 import "./index.css";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router/Router";
 
 function App() {
-  return (
-    <div className="App">
-      <h1>hello</h1>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

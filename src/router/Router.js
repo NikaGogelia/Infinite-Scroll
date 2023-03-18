@@ -4,7 +4,7 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 // Pages
-import Users, { usersLoader } from "../pages/Users";
+import Users from "../pages/Users";
 import UserDetail, { userDetailLoader } from "../pages/UserDetail";
 import NotFound from "../pages/NotFound";
 import LoaderError from "../components/LoaderError";
@@ -15,12 +15,7 @@ import RootLayout from "../layout/RootLayout";
 export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<RootLayout />}>
-      <Route
-        index
-        element={<Users />}
-        loader={usersLoader}
-        errorElement={<LoaderError />}
-      />
+      <Route index element={<Users />} />
       <Route
         path="user/:id"
         element={<UserDetail />}

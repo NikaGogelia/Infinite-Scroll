@@ -1,31 +1,32 @@
+import { useState, useEffect } from "react";
+import { usePage } from "../hooks/usePage";
+import { fetchData } from "../functions/FetchData";
 import UsersWrapper from "../components/UsersWrapper";
-import { useLoaderData } from "react-router-dom";
 
 function Users() {
-  const users = useLoaderData();
+  const [users, setUsers] = useState([]);
+  const { page, loader } = usePage();
+
+  useEffect(() => {
+    fetchData(
+      `http://sweeftdigital-intern.eu-central-1.elasticbeanstalk.com/user/${page}/20`
+    ).then((res) =>
+      setUsers((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(res.list)) {
+          return res.list;
+        } else {
+          return prev.concat(res.list);
+        }
+      })
+    );
+  }, [page]);
 
   return (
     <div className="users-container">
       <h1>Users</h1>
-      <UsersWrapper users={users} />
+      <UsersWrapper users={users} loader={loader} />
     </div>
   );
 }
 
-async function usersLoader() {
-  const userNum = 20;
-  const pageNum = 1;
-  const usersApi = `http://sweeftdigital-intern.eu-central-1.elasticbeanstalk.com/user/${pageNum}/${userNum}`;
-
-  const response = await fetch(usersApi);
-
-  if (!response.ok) {
-    throw Error(`Error Occurred While Fetching Data: ${response.status}`);
-  }
-
-  const json = await response.json();
-  return json;
-}
-
 export default Users;
-export { usersLoader };

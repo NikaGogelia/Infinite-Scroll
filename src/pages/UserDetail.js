@@ -1,10 +1,13 @@
-import { useEffect, useCallback, useState } from "react";
-import { Link } from "react-router-dom";
-import { useLoaderData } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLoaderData, Link } from "react-router-dom";
+import { usePage } from "../hooks/usePage";
+import { fetchData } from "../functions/FetchData";
 import UsersWrapper from "../components/UsersWrapper";
 
 function UserDetail() {
   const [userFriends, setUserFriends] = useState([]);
+  const { page, loader } = usePage();
+
   const user = useLoaderData();
   const {
     id,
@@ -21,22 +24,32 @@ function UserDetail() {
     address,
   } = user;
 
-  const userFriendsLoader = useCallback(async () => {
-    const usersApi = `http://sweeftdigital-intern.eu-central-1.elasticbeanstalk.com/user/${id}/friends/1/20`;
-
-    const response = await fetch(usersApi);
-
-    if (!response.ok) {
-      throw Error(`Error Occurred While Fetching Data: ${response.status}`);
-    }
-
-    const json = await response.json();
-    setUserFriends(json);
-  }, [id]);
+  useEffect(() => {
+    fetchData(
+      `http://sweeftdigital-intern.eu-central-1.elasticbeanstalk.com/user/${id}/friends/${page}/20`
+    ).then((res) => {
+      setUserFriends((prev) => {
+        if (JSON.stringify(prev) === JSON.stringify(res.list)) {
+          return res.list;
+        } else {
+          return prev.concat(res.list);
+        }
+      });
+    });
+  }, [id, setUserFriends, page]);
 
   useEffect(() => {
-    userFriendsLoader();
-  }, [userFriendsLoader]);
+    const handleBeforeUnload = () => {
+      setUserFriends([]);
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      setUserFriends([]);
+    };
+  }, [setUserFriends]);
 
   return (
     <div className="user-detail-container">
@@ -103,24 +116,16 @@ function UserDetail() {
       </div>
       <div className="user-friends">
         <h3 className="mx-2 mt-5 mb-3">Friends:</h3>
-        <UsersWrapper users={userFriends} />
+        <UsersWrapper users={userFriends} loader={loader} />
       </div>
     </div>
   );
 }
 
-async function userDetailLoader({ params }) {
-  const { id } = params;
-  const usersApi = `http://sweeftdigital-intern.eu-central-1.elasticbeanstalk.com/user/${id}`;
-
-  const response = await fetch(usersApi);
-
-  if (!response.ok) {
-    throw Error(`Error Occurred While Fetching Data: ${response.status}`);
-  }
-
-  const json = await response.json();
-  return json;
+function userDetailLoader({ params }) {
+  return fetchData(
+    `http://sweeftdigital-intern.eu-central-1.elasticbeanstalk.com/user/${params.id}`
+  );
 }
 
 export default UserDetail;

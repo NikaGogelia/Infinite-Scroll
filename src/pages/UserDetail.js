@@ -38,19 +38,6 @@ function UserDetail() {
     });
   }, [id, setUserFriends, page]);
 
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      setUserFriends([]);
-    };
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      setUserFriends([]);
-    };
-  }, [setUserFriends]);
-
   return (
     <div className="user-detail-container">
       <Link className="btn btn-primary m-2" to="/">
